@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flash_chat/screens/welcome_screen.dart';
-import 'package:flash_chat/screens/login_screen.dart';
-import 'package:flash_chat/screens/registration_screen.dart';
-import 'package:flash_chat/screens/chat_screen.dart';
+import 'package:myapp/screens/welcome_screen.dart';
+import 'package:myapp/screens/login_screen.dart';
+import 'package:myapp/screens/registration_screen.dart';
+import 'package:myapp/screens/chat_screen.dart';
 
 void main() => runApp(FlashChat());
 
