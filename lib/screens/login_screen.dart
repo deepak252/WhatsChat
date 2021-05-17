@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/components/rounded_button.dart';
 import 'package:myapp/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/screens/chat_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const id='Login_screen';
@@ -9,6 +11,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _auth=FirebaseAuth.instance;
+  String email;
+  String password;
   
   @override
   Widget build(BuildContext context) {
@@ -32,9 +37,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             TextField(
               onChanged: (value) {
-                //Do something with the user input.
+                email=value;
               },
-              
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.emailAddress,              
               decoration:  kTextFieldDecoration.copyWith(hintText: 'Enter your email'),
             ),
             SizedBox(
@@ -42,8 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             TextField(
               onChanged: (value) {
-                //Do something with the user input.
+                password=value;
               },
+              obscureText: true,
+              textAlign: TextAlign.center,
               decoration:  kTextFieldDecoration.copyWith(hintText: 'Enter your password'),
             ),
             SizedBox(
@@ -52,7 +60,16 @@ class _LoginScreenState extends State<LoginScreen> {
             RoundedButton(
               btnText: 'Login',
               btnColor: Colors.lightBlueAccent,
-              onPressed: (){},
+              onPressed: () async{
+                try{
+                  final user= await _auth.signInWithEmailAndPassword(email: email,password: password);
+                  if(user!=null)
+                    Navigator.pushNamed(context, ChatScreen.id);
+                  
+                }catch(e){
+                  print(e);
+                }
+              },
             ),
           ],
         ),
