@@ -83,6 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       _firestore.collection('messages').add({
                         'sender': loggedInUser.email,
                         'text': messageText,
+                        'time':FieldValue.serverTimestamp(),
                       });
                     },
                     child: Text(
@@ -106,7 +107,7 @@ class MessagesStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('messages').snapshots(),
+      stream: _firestore.collection('messages').orderBy('time',descending:false).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(
@@ -120,6 +121,7 @@ class MessagesStream extends StatelessWidget {
         for (var message in messages) {
           final messageText = message['text'];
           final messageSender = message['sender'];
+          final messageTime = message['time'] as Timestamp;
           
           final currentUser=loggedInUser.email;
 
@@ -127,6 +129,7 @@ class MessagesStream extends StatelessWidget {
             sender: messageSender,
             text: messageText,
             isMe: currentUser==messageSender,
+            time: messageTime,
           ); 
           messageBubbles.add(messageBubble);
         }
@@ -146,7 +149,8 @@ class MessageBubble extends StatelessWidget {
   final String text;
   final String sender;
   final bool isMe;
-  MessageBubble({this.sender,this.text,this.isMe});
+  final Timestamp time;
+  MessageBubble({this.sender,this.text,this.isMe,this.time});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -155,7 +159,9 @@ class MessageBubble extends StatelessWidget {
         crossAxisAlignment: isMe ? CrossAxisAlignment.end :  CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            '$sender',
+            // '$sender ${DateTime.fromMillisecondsSinceEpoch(time.seconds * 1000)}',
+            '$sender ${time.toDate()}',
+            
             style: TextStyle(color: Colors.black54,),
 
           ),
