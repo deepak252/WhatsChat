@@ -79,12 +79,35 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   TextButton(
                     onPressed: () {
+                      
+                      if(messageText=='')
+                      {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                            "Message Can't be empty",
+                            textAlign:TextAlign.center,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20))
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.only(bottom: 80,left: 40,right: 40),
+                          duration: Duration(seconds: 2),
+                          // padding: EdgeInsets.symmetric(horizontal: 0,vertical: ),
+                          
+                        ));
+                      }
+                      else
+                      {
+                        _firestore.collection('messages').add({
+                          'sender': loggedInUser.email,
+                          'text': messageText,
+                          'time':FieldValue.serverTimestamp(),
+                        });
+                      }                      
+                      
+                      // print(FieldValue.serverTimestamp());
                       messageTextController.clear();
-                      _firestore.collection('messages').add({
-                        'sender': loggedInUser.email,
-                        'text': messageText,
-                        'time':FieldValue.serverTimestamp(),
-                      });
                     },
                     child: Text(
                       'Send',
@@ -121,9 +144,9 @@ class MessagesStream extends StatelessWidget {
         for (var message in messages) {
           final messageText = message['text'];
           final messageSender = message['sender'];
-          final messageTime = message['time'] as Timestamp;
-          
+          final messageTime = message['time'];          
           final currentUser=loggedInUser.email;
+          
 
           final messageBubble = MessageBubble(
             sender: messageSender,
@@ -150,20 +173,26 @@ class MessageBubble extends StatelessWidget {
   final String sender;
   final bool isMe;
   final Timestamp time;
-  MessageBubble({this.sender,this.text,this.isMe,this.time});
+  MessageBubble({this.sender,this.text,this.isMe,Timestamp time}):time = time ?? Timestamp.now();
+  
+  String getTime()
+  {
+    String timeInMilliSec= DateTime.fromMillisecondsSinceEpoch(time.seconds*1000).toString().split(' ')[1];
+    List<String> splitTime= timeInMilliSec.split(':');
+    return '${splitTime[0]}:${splitTime[1]}';
+  }
+
   @override
   Widget build(BuildContext context) {
+    
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: isMe ? CrossAxisAlignment.end :  CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            // '$sender ${DateTime.fromMillisecondsSinceEpoch(time.seconds * 1000)}',
-            '$sender ${time.toDate()}',
-            
+            '${sender.split('@')[0]}',
             style: TextStyle(color: Colors.black54,),
-
           ),
           SizedBox(height: 3,),
           Material(
@@ -180,12 +209,30 @@ class MessageBubble extends StatelessWidget {
             ),
             child:Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-              child: Text(
-                '$text',
-                style: TextStyle(
-                  fontSize: 17.0,
-                  color: isMe? Colors.white : Colors.lightBlueAccent,
-                ),
+              child: Column(
+                // crossAxisAlignment: ,
+                children: <Widget>[
+                  
+                  Text(
+                    '$text',
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      color: isMe? Colors.white : Colors.lightBlueAccent,
+                    ),
+                  ),
+                  SizedBox(
+                    child: Text(
+                      '${getTime()}',
+                      
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12.0,
+                        backgroundColor: Colors.black
+                      ),
+                    ),
+                  )
+                ]
               ),
             ),
           ),
