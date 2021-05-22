@@ -44,8 +44,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xffEDEEF3),
       appBar: AppBar(
-        leading: null,
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.close),
@@ -54,8 +54,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context);
               }),
         ],
-        title: Text('⚡️Chat'),
-        backgroundColor: Colors.lightBlueAccent,
+        title: Text(
+          'My Chat',  //⚡
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xff2E253E),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        
+        backgroundColor: Colors.white,
       ),
       body: SafeArea(
         child: Column(
@@ -65,6 +73,7 @@ class _ChatScreenState extends State<ChatScreen> {
             MessagesStream(),
             Container(
               decoration: kMessageContainerDecoration,
+            
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
@@ -108,11 +117,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       
                       // print(FieldValue.serverTimestamp());
                       messageTextController.clear();
+                      messageText='';
                     },
-                    child: Text(
-                      'Send',
-                      style: kSendButtonTextStyle,
-                    ),
+                    child: Icon(
+                      Icons.send,
+                      size: 30.0,
+                    )
                   ),
                 ],
               ),
@@ -173,6 +183,7 @@ class MessageBubble extends StatelessWidget {
   final String sender;
   final bool isMe;
   final Timestamp time;
+  
   MessageBubble({this.sender,this.text,this.isMe,Timestamp time}):time = time ?? Timestamp.now();
   
   String getTime()
@@ -182,56 +193,75 @@ class MessageBubble extends StatelessWidget {
     return '${splitTime[0]}:${splitTime[1]}';
   }
 
+  Widget senderNameLabel()
+  {
+    if(!isMe )
+    {
+      return Text(
+              '${sender.split('@')[0]}',
+              style: TextStyle(color: Colors.black54,),
+            );
+    }      
+    else
+    {
+      // print(previousMessageSender);
+      return SizedBox();
+    } 
+  }
+
   @override
   Widget build(BuildContext context) {
     
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
+      // constraints: BoxConstraints(minWidth: 10, maxWidth: 20),
+      padding: EdgeInsets.all(8.0),
+      // color: Colors.red,
       child: Column(
         crossAxisAlignment: isMe ? CrossAxisAlignment.end :  CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            '${sender.split('@')[0]}',
-            style: TextStyle(color: Colors.black54,),
-          ),
+          senderNameLabel(), 
           SizedBox(height: 3,),
-          Material(
-            color:isMe ? Colors.lightBlueAccent : Colors.white,
-            elevation: 5.0,
-            borderRadius: isMe ? BorderRadius.only( 
-              topLeft: Radius.circular(15),
-              bottomLeft:  Radius.circular(15),
-              bottomRight:  Radius.circular(15)
-            ) :  BorderRadius.only( 
-              topRight: Radius.circular(15),
-              bottomLeft:  Radius.circular(15),
-              bottomRight:  Radius.circular(15)
-            ),
-            child:Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-              child: Column(
-                // crossAxisAlignment: ,
-                children: <Widget>[
-                  
-                  Text(
-                    '$text',
-                    style: TextStyle(
-                      fontSize: 17.0,
-                      color: isMe? Colors.white : Colors.lightBlueAccent,
-                    ),
-                  ),
-                  SizedBox(
+          Container(
+            constraints: BoxConstraints(minWidth: 10, maxWidth: 370),
+            child: Material(
+              color:isMe ? Color(0xffd89a0e) : Colors.white,   //f7d283
+              elevation: 5.0,
+              borderRadius: isMe ? BorderRadius.only( 
+                topLeft: Radius.circular(15),
+                bottomLeft:  Radius.circular(15),
+                bottomRight:  Radius.circular(15)
+                ) :  BorderRadius.only( 
+                topRight: Radius.circular(15),
+                bottomLeft:  Radius.circular(15),
+                bottomRight:  Radius.circular(15)
+              ),
+              
+              child:Stack(
+                children:<Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20,top: 15,bottom: 20,right: 20),
                     child: Text(
-                      '${getTime()}',
-                      
-                      textAlign: TextAlign.start,
+                      '$text',
                       style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12.0,
-                        backgroundColor: Colors.black
+                        fontSize: 17.0,
+                        color: isMe? Colors.white : Color(0xff2A2A2A),
                       ),
                     ),
-                  )
+                  ),
+                  SizedBox(width: 10,height: 10,),
+                  Positioned(
+                  bottom: 5.0,
+                  right: 5.0,
+                  child: Text(
+                    getTime(),
+                    style: TextStyle(
+                      color: isMe ? Colors.white60: Colors.black54,
+                      fontSize: 12.0,
+                    )
+                  ),
+                )
+                  
+                  
                 ]
               ),
             ),

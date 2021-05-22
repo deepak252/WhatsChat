@@ -46,5 +46,5 @@ app.*.map.json
 /android/app/release
 
 #MYAPP
-android/app/build.gradle
-android/app/google-services.json
+/android/app/build.gradle
+/android/app/google-services.json

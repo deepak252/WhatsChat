@@ -79,7 +79,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                 AnimatedTextKit(
                   animatedTexts: [
                     WavyAnimatedText(
-                      'Flash Chat',
+                      'My Chat',
                       textStyle: TextStyle(
                         fontSize: 45,
                         fontWeight: FontWeight.w900,
@@ -98,6 +98,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
               onPressed: (){
                 Navigator.pushNamed(context, LoginScreen.id);
               },
+            ),
+            SizedBox(height: 12,),
+            Text(
+              'Not registered yet?',
+              textAlign: TextAlign.center,
             ),
             RoundedButton(
               btnColor: Colors.blueAccent,
